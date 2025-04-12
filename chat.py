@@ -1,5 +1,5 @@
 from fastapi import FastAPI, HTTPException, Depends
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, field_validator
 from datetime import datetime, UTC
 from uuid import uuid4
 
@@ -21,6 +21,12 @@ class Message(BaseModel):
     text: str
     metadata: Metadata
     tags: list[str] | None = None  # Optional list of tags
+    @field_validator
+    @classmethod
+    def message_has_two_words(cls, v):
+        if len(v.strip().split()) < 2:
+            raise ValueError("Name must be at least 2 words long")
+        return v
 
 
 class Response(BaseModel):
